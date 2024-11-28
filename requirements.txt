@@ -1,7 +1,7 @@
 streamlit
-pandas 
+pandas
 seaborn
 matplotlib
 nltk
 scikit-learn
-pickle5
+openpyxl
