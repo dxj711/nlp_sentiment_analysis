@@ -14,6 +14,10 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 import pickle
 
+
+# Download stopwords if not already present
+nltk.download('stopwords')
+nltk.download('punkt')
 # Set Streamlit title
 st.title("Sentiment Analysis App")
 
