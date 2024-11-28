@@ -1,31 +1,5 @@
 import nltk
 
-# Download required NLTK resources
-nltk.download('punkt')
-nltk.download('stopwords')
-
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-
-import nltk
-nltk.download('punkt')  # Ensure this is downloaded
-nltk.download('stopwords')  # Download stopwords too, if needed
-
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
-from nltk.stem import PorterStemmer
-
-# Initialize stopwords and stemmer
-stop_words = stopwords.words('english')
-porter = PorterStemmer()
-
-def preprocess_text(text):
-    tokens = word_tokenize(text.lower())
-    tokens = [porter.stem(word) for word in tokens if word not in stop_words and word.isalnum()]
-    return " ".join(tokens)
-
-
-
 
 import streamlit as st
 import pandas as pd
