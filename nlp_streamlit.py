@@ -45,9 +45,12 @@ if 'data' in locals():
     porter = PorterStemmer()
 
     def preprocess_text(text):
+        if not isinstance(text, str):
+            return ""
         tokens = word_tokenize(text.lower())
         tokens = [porter.stem(word) for word in tokens if word not in stop_words and word.isalnum()]
         return " ".join(tokens)
+    
 
     data['cleaned_review'] = data['review'].apply(preprocess_text)
     st.write("Cleaned Data Preview:")
