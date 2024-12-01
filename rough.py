@@ -12,7 +12,7 @@ nltk.download('punkt', download_dir=nltk_data_dir)
 
 # Verify if 'punkt' is available in the specified directory
 print(nltk.data.find('tokenizers/punkt'))
-
+from nltk.tokenize import word_tokenize
 text = "Hello, world! How are you today?"
 tokens = word_tokenize(text)
 print(tokens)
