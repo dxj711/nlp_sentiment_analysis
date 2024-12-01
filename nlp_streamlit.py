@@ -2,8 +2,6 @@ import nltk
 import os
 import streamlit as st
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
@@ -13,16 +11,9 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 import pickle
 
-# Set up NLTK data directory
-nltk_data_dir = os.path.join(os.getcwd(), 'nltk_data')
-if not os.path.exists(nltk_data_dir):
-    os.makedirs(nltk_data_dir)
-
-nltk.data.path.append(nltk_data_dir)
-
-# Download necessary NLTK resources
-nltk.download('punkt', download_dir=nltk_data_dir)
-nltk.download('stopwords', download_dir=nltk_data_dir)
+# Ensure required NLTK resources are downloaded
+nltk.download('punkt')
+nltk.download('stopwords')
 
 # Streamlit App Title
 st.title("Sentiment Analysis App")
@@ -50,7 +41,7 @@ if 'data' in locals():
 
     # Text Preprocessing
     st.header("Text Preprocessing")
-    stop_words = stopwords.words('english')
+    stop_words = set(stopwords.words('english'))
     porter = PorterStemmer()
 
     def preprocess_text(text):
@@ -86,7 +77,7 @@ if 'data' in locals():
     st.write(f"Test Accuracy: {test_acc:.2f}")
 
     # Save Model
-    output_dir = os.path.join(os.getcwd(), "Output")
+    output_dir = "Output"
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
