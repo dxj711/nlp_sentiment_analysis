@@ -1,6 +1,5 @@
 import nltk
-
-
+import os
 import streamlit as st
 import pandas as pd
 import seaborn as sns
@@ -14,30 +13,40 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 import pickle
 
+# Set up NLTK data directory
+nltk_data_dir = os.path.join(os.getcwd(), 'nltk_data')
+if not os.path.exists(nltk_data_dir):
+    os.makedirs(nltk_data_dir)
 
-# Download stopwords if not already present
-nltk.download('stopwords')
-nltk.download('punkt')
-# Set Streamlit title
+nltk.data.path.append(nltk_data_dir)
+
+# Download necessary NLTK resources
+nltk.download('punkt', download_dir=nltk_data_dir)
+nltk.download('stopwords', download_dir=nltk_data_dir)
+
+# Streamlit App Title
 st.title("Sentiment Analysis App")
 
-# Load data
+# Load Data
 try:
     data = pd.read_excel("data/Canva_reviews.xlsx")
     st.write("Data Loaded Successfully")
 except FileNotFoundError:
-    st.error("File not found. Please ensure 'Canva_reviews.xlsx' exists in the 'Input' folder.")
+    st.error("File not found. Please ensure 'Canva_reviews.xlsx' exists in the 'data' folder.")
 
-# Display data summary
+# Display Data Summary
 if 'data' in locals():
     st.write("Data Shape:", data.shape)
     st.write("Data Preview:")
     st.write(data.head())
 
     # Basic Analysis
-    sentiment_counts = data['Sentiment'].value_counts()
-    st.write("Sentiment Distribution:")
-    st.bar_chart(sentiment_counts)
+    if 'Sentiment' in data.columns:
+        sentiment_counts = data['Sentiment'].value_counts()
+        st.write("Sentiment Distribution:")
+        st.bar_chart(sentiment_counts)
+    else:
+        st.error("The dataset must contain a 'Sentiment' column.")
 
     # Text Preprocessing
     st.header("Text Preprocessing")
@@ -48,13 +57,15 @@ if 'data' in locals():
         if not isinstance(text, str):
             return ""
         tokens = word_tokenize(text.lower())
-        tokens = [porter.stem(word) for word in tokens if word not in stop_words and word.isalnum()]
+        tokens = [porter.stem(word) for word in tokens if word.isalnum() and word not in stop_words]
         return " ".join(tokens)
-    
 
-    data['cleaned_review'] = data['review'].apply(preprocess_text)
-    st.write("Cleaned Data Preview:")
-    st.write(data[['review', 'cleaned_review']].head())
+    if 'review' in data.columns:
+        data['cleaned_review'] = data['review'].apply(preprocess_text)
+        st.write("Cleaned Data Preview:")
+        st.write(data[['review', 'cleaned_review']].head())
+    else:
+        st.error("The dataset must contain a 'review' column.")
 
     # Feature Extraction
     vectorizer = CountVectorizer(min_df=5)
@@ -75,9 +86,13 @@ if 'data' in locals():
     st.write(f"Test Accuracy: {test_acc:.2f}")
 
     # Save Model
-    with open("Output/model.pkl", "wb") as f:
+    output_dir = os.path.join(os.getcwd(), "Output")
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    with open(os.path.join(output_dir, "model.pkl"), "wb") as f:
         pickle.dump(model, f)
-    with open("Output/vectorizer.pkl", "wb") as f:
+    with open(os.path.join(output_dir, "vectorizer.pkl"), "wb") as f:
         pickle.dump(vectorizer, f)
 
     st.write("Model and Vectorizer Saved Successfully")
@@ -93,4 +108,4 @@ if 'data' in locals():
             sentiment = "Positive" if prediction[0] == 1 else "Negative"
             st.write(f"Predicted Sentiment: {sentiment}")
         else:
-            st.error("Please enter a review")
+            st.error("Please enter a review.")
